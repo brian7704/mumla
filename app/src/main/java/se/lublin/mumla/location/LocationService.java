@@ -91,8 +91,7 @@ public class LocationService extends Service {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
                 .setOngoing(true)
-                .setContentTitle("Mumble Traccar")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_notify)
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(launchActivity)

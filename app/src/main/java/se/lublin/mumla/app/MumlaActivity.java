@@ -582,17 +582,6 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
         Log.d(TAG, "Traccar enabled: " + mSettings.isTraccarEnabled());
 
         if (mSettings.isTraccarEnabled()) {
-            if (ContextCompat.checkSelfPermission(MumlaActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ArrayList<String> permissions = new ArrayList<>();
-                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-                ActivityCompat.requestPermissions(MumlaActivity.this, permissions.toArray(new String[0]),
-                        PERMISSIONS_REQUEST_COARSE_LOCATION);
-                return;
-            }
-        }
-
-        if (mSettings.isTraccarEnabled()) {
             if (ContextCompat.checkSelfPermission(MumlaActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 ArrayList<String> permissions = new ArrayList<>();
