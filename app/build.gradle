@@ -91,6 +91,10 @@ android {
             dimension "release"
             applicationId "se.lublin.mumla.beta"
         }
+        traccar {
+            dimension "release"
+            applicationId "se.lublin.mumla.traccar"
+        }
     }
 
     buildTypes {
