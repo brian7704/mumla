@@ -31,6 +31,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,18 +55,23 @@ public class Preferences extends PreferenceActivity {
     public static final String ACTION_PREFS_AUDIO = "se.lublin.mumla.app.PREFS_AUDIO";
     public static final String ACTION_PREFS_APPEARANCE = "se.lublin.mumla.app.PREFS_APPEARANCE";
     public static final String ACTION_PREFS_ABOUT = "se.lublin.mumla.app.PREFS_ABOUT";
+    public static final String ACTION_PREFS_LOCATION = "se.lublin.mumla.app.PREFS_LOCATION";
 
     private static final String USE_TOR_KEY = "useTor";
     private static final String VERSION_KEY = "version";
 
+    private static final String LOGTAG = "Preferences";
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        Log.d(LOGTAG, "onCreate");
         setTheme(Settings.getInstance(this).getTheme());
         super.onCreate(savedInstanceState);
 
         // Legacy preference section handling
         String action = getIntent().getAction();
         if (action != null) {
+            Log.d(LOGTAG, "Action: " + action);
             if (ACTION_PREFS_GENERAL.equals(action)) {
                 addPreferencesFromResource(R.xml.settings_general);
                 configureOrbotPreferences(getPreferenceScreen());
@@ -79,7 +85,11 @@ public class Preferences extends PreferenceActivity {
             } else if (ACTION_PREFS_ABOUT.equals(action)) {
                 addPreferencesFromResource(R.xml.settings_about);
                 configureAboutPreferences(this, getPreferenceScreen());
+            } else if (ACTION_PREFS_LOCATION.equals(action)) {
+                addPreferencesFromResource(R.xml.settings_location);
             }
+        } else {
+            Log.d(LOGTAG, "LOL ACTION NULL");
         }
     }
 
@@ -157,6 +167,7 @@ public class Preferences extends PreferenceActivity {
             super.onCreate(savedInstanceState);
 
             String section = getArguments().getString("settings");
+            Log.d(LOGTAG, "HONEYCOMB " + section);
             if ("general".equals(section)) {
                 addPreferencesFromResource(R.xml.settings_general);
                 configureOrbotPreferences(getPreferenceScreen());
@@ -170,6 +181,8 @@ public class Preferences extends PreferenceActivity {
             } else if ("about".equals(section)) {
                 addPreferencesFromResource(R.xml.settings_about);
                 configureAboutPreferences(getPreferenceScreen().getContext(), getPreferenceScreen());
+            } else if ("location".equals(section)) {
+                addPreferencesFromResource(R.xml.settings_location);
             }
         }
     }

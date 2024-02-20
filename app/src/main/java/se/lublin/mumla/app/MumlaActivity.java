@@ -18,8 +18,10 @@
 package se.lublin.mumla.app;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -28,6 +30,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -91,6 +94,7 @@ import se.lublin.mumla.db.DatabaseProvider;
 import se.lublin.mumla.db.MumlaDatabase;
 import se.lublin.mumla.db.MumlaSQLiteDatabase;
 import se.lublin.mumla.db.PublicServer;
+import se.lublin.mumla.location.LocationService;
 import se.lublin.mumla.preference.MumlaCertificateGenerateTask;
 import se.lublin.mumla.preference.Preferences;
 import se.lublin.mumla.servers.FavouriteServerListFragment;
@@ -124,6 +128,9 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
 
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS = 2;
+    private static final int PERMISSIONS_REQUEST_COARSE_LOCATION = 3;
+    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 4;
+    private static final int PERMISSIONS_REQUEST_BACKGROUND_LOCATION = 5;
     private Server mServerPendingPerm = null;
     private boolean mPermPostNotificationsAsked = false;
 
@@ -190,6 +197,9 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
             supportInvalidateOptionsMenu();
 
             updateConnectionState(getService());
+
+            Intent intent = new Intent(MumlaActivity.this, LocationService.class);
+            stopService(intent);
         }
 
         @Override
@@ -569,6 +579,48 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
             }
         }
 
+        Log.d(TAG, "Traccar enabled: " + mSettings.isTraccarEnabled());
+
+        if (mSettings.isTraccarEnabled()) {
+            if (ContextCompat.checkSelfPermission(MumlaActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ArrayList<String> permissions = new ArrayList<>();
+                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+                ActivityCompat.requestPermissions(MumlaActivity.this, permissions.toArray(new String[0]),
+                        PERMISSIONS_REQUEST_COARSE_LOCATION);
+                return;
+            }
+        }
+
+        if (mSettings.isTraccarEnabled()) {
+            if (ContextCompat.checkSelfPermission(MumlaActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ArrayList<String> permissions = new ArrayList<>();
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                ActivityCompat.requestPermissions(MumlaActivity.this, permissions.toArray(new String[0]),
+                        PERMISSIONS_REQUEST_FINE_LOCATION);
+                return;
+            }
+        }
+
+        if (mSettings.isTraccarEnabled()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                    ContextCompat.checkSelfPermission(MumlaActivity.this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                ArrayList<String> permissions = new ArrayList<>();
+                permissions.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+                ActivityCompat.requestPermissions(MumlaActivity.this, permissions.toArray(new String[0]),
+                        PERMISSIONS_REQUEST_BACKGROUND_LOCATION);
+                return;
+            }
+        }
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (mSettings.isTraccarEnabled() && locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+            Intent intent = new Intent(this, LocationService.class);
+            startService(intent);
+        }
+
         if (mServerPendingPerm == null) {
             Log.w(TAG, "No pending server after getting permissions");
             return;
@@ -653,6 +705,15 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
                     }
                 }
                 connectToServerWithPerm();
+                break;
+            case PERMISSIONS_REQUEST_FINE_LOCATION:
+            case PERMISSIONS_REQUEST_BACKGROUND_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_DENIED && mSettings.isTraccarEnabled()) {
+                    Toast.makeText(MumlaActivity.this,
+                            getString(R.string.grant_perm_location), Toast.LENGTH_LONG).show();
+                } else {
+                    connectToServerWithPerm();
+                }
                 break;
         }
     }
@@ -777,6 +838,10 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
                                error.getReason() == HumlaException.HumlaDisconnectReason.REJECT &&
                                (error.getReject().getType() == Mumble.Reject.RejectType.WrongUserPW ||
                                 error.getReject().getType() == Mumble.Reject.RejectType.WrongServerPW)) {
+
+                        Intent intent = new Intent(MumlaActivity.this, LocationService.class);
+                        stopService(intent);
+
                         final EditText passwordField = new EditText(this);
                         passwordField.setInputType(InputType.TYPE_CLASS_TEXT |
                                 InputType.TYPE_TEXT_VARIATION_PASSWORD);

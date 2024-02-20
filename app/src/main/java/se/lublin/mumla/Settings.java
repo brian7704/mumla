@@ -173,6 +173,21 @@ public class Settings {
     public static final String PREF_START_UP_IN_PINNED_MODE = "startUpInPinnedMode";
     public static final boolean DEFAULT_START_UP_IN_PINNED_MODE = false;
 
+    public static final String PREF_TRACCAR_URL = "traccar_url";
+    public static final String DEFAULT_PREF_TRACCAR_URL = "http://192.168.1.10:5055";
+
+    public static final String PREF_TRACCAR_USERNAME = "traccar_username";
+    public static final String DEFAULT_PREF_TRACCAR_USERNAME = "admin";
+
+    public static final String PREF_TRACCAR_PASSWORD = "traccar_password";
+    public static final String DEFAULT_PREF_TRACCAR_PASSWORD = "password";
+
+    public static final String PREF_TRACCAR_ID = "traccar_id";
+    public static final String DEFAULT_PREF_TRACCAR_ID = "12345";
+
+    public static final String PREF_TRACCAR_ENABLED = "enable_traccar";
+    public static final boolean DEFAULT_PREF_TRACCAR_ENABLED = false;
+
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
         ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_VOICE);
@@ -464,5 +479,26 @@ public class Settings {
 
     public boolean shouldStartUpInPinnedMode() {
         return preferences.getBoolean(PREF_START_UP_IN_PINNED_MODE, DEFAULT_START_UP_IN_PINNED_MODE);
+    }
+
+    public String getTraccarUrl() {
+        return preferences.getString(PREF_TRACCAR_URL, DEFAULT_PREF_TRACCAR_URL);
+    }
+
+    public String getTraccarUsername() {
+        return preferences.getString(PREF_TRACCAR_USERNAME, DEFAULT_PREF_TRACCAR_USERNAME);
+    }
+
+    public String getTraccarPassword() {
+        return preferences.getString(PREF_TRACCAR_PASSWORD, DEFAULT_PREF_TRACCAR_PASSWORD);
+    }
+
+    public String getTraccarId() {
+        return preferences.getString(PREF_TRACCAR_ID, DEFAULT_PREF_TRACCAR_ID);
+    }
+
+    public boolean isTraccarEnabled() {
+        Log.d(TAG, "Traccar enabled: " + preferences.getBoolean(PREF_TRACCAR_ENABLED, DEFAULT_PREF_TRACCAR_ENABLED));
+        return preferences.getBoolean(PREF_TRACCAR_ENABLED, DEFAULT_PREF_TRACCAR_ENABLED);
     }
 }

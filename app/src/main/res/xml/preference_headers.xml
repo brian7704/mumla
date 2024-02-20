@@ -39,6 +39,11 @@
         <extra android:name="settings" android:value="appearance"></extra>
     </header>
     <header
+        android:title="@string/location"
+        android:fragment="se.lublin.mumla.preference.Preferences$MumlaPreferenceFragment">
+        <extra android:name="settings" android:value="location"></extra>
+    </header>
+    <header
         android:title="@string/about"
         android:fragment="se.lublin.mumla.preference.Preferences$MumlaPreferenceFragment">
         <extra android:name="settings" android:value="about"></extra>
