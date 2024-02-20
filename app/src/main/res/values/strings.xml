@@ -211,6 +211,7 @@
     <string name="traccar_id">Traccar ID</string>
     <string name="grant_perm_location">Location permission required for Traccar</string>
     <string name="sending_to_traccar">Sending location to Traccar</string>
+    <string name="traccar">Traccar</string>
 
     <plurals name="search_channel_users">
         <item quantity="one">%d user</item>
