@@ -88,8 +88,6 @@ public class Preferences extends PreferenceActivity {
             } else if (ACTION_PREFS_LOCATION.equals(action)) {
                 addPreferencesFromResource(R.xml.settings_location);
             }
-        } else {
-            Log.d(LOGTAG, "LOL ACTION NULL");
         }
     }
 

@@ -137,7 +137,6 @@ public class LocationService extends Service {
 
         this.registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -152,7 +151,7 @@ public class LocationService extends Service {
             _locManager.removeUpdates(_locListener);
             unregisterReceiver(batteryReceiver);
         } catch (Exception e) {
-            Log.d(TAG, e.getLocalizedMessage());
+            Log.d(TAG, "onDestroy: " + e.getLocalizedMessage());
         }
         Log.d(TAG, "onDestroy");
     }
@@ -162,11 +161,13 @@ public class LocationService extends Service {
         public void onLocationChanged(@NonNull Location location)
         {
             try {
+                Log.d(TAG, "OSMAND");
                 traccarInterface.osmAnd(settings.getTraccarId(), System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
                         location.getSpeed(), location.getAltitude(), location.getBearing(), location.getAccuracy(), batteryCharging, batteryPercent).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         Log.d(TAG, response.message());
+                        Log.d(TAG, "OSM RESPONSE " + response.message());
                     }
 
                     @Override

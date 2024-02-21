@@ -2,6 +2,8 @@ package se.lublin.mumla.app;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -117,6 +120,10 @@ public class Map extends HumlaServiceFragment implements MapListener {
         myLocationNewOverlay = new MyLocationNewOverlay(mapView);
         myLocationNewOverlay.enableMyLocation();
         myLocationNewOverlay.setDrawAccuracyEnabled(true);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            myLocationNewOverlay.setDirectionIcon(getArrowBitmap());
+
         myLocationNewOverlay.runOnFirstFix(() -> {
             getActivity().runOnUiThread(() -> {
                 mapView.zoomToBoundingBox(getBoundingBox(), true);
@@ -147,6 +154,27 @@ public class Map extends HumlaServiceFragment implements MapListener {
         }
     }
 
+    private Bitmap getArrowBitmap() {
+        try {
+            Bitmap bitmap;
+            Drawable green_arrow = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                green_arrow = getContext().getDrawable(R.drawable.arrow_green);
+                bitmap = Bitmap.createBitmap(green_arrow.getIntrinsicWidth(), green_arrow.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+                Canvas canvas = new Canvas(bitmap);
+                green_arrow.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                green_arrow.draw(canvas);
+                return bitmap;
+            } else {
+                return null;
+            }
+        } catch (OutOfMemoryError e) {
+            // Handle the error
+            return null;
+        }
+    }
+
     private BoundingBox getBoundingBox() {
         BoundingBox bbox = new BoundingBox();
         GeoPoint location = myLocationNewOverlay.getMyLocation();
@@ -165,6 +193,7 @@ public class Map extends HumlaServiceFragment implements MapListener {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
         myLocationNewOverlay.enableMyLocation();
         traccarLogin();
     }
@@ -172,6 +201,7 @@ public class Map extends HumlaServiceFragment implements MapListener {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause");
         myLocationNewOverlay.disableMyLocation();
     }
 
@@ -214,8 +244,10 @@ public class Map extends HumlaServiceFragment implements MapListener {
                 @Override
                 public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                     Log.d(TAG, "Traccar login failed: " + t.getLocalizedMessage());
-                    Toast.makeText(getContext(), "Traccar login failed: " + t.getLocalizedMessage(),
-                            Toast.LENGTH_LONG).show();
+                    try {
+                        Toast.makeText(getContext(), "Traccar login failed: " + t.getLocalizedMessage(),
+                                Toast.LENGTH_LONG).show();
+                    } catch (NullPointerException e) {}
                 }
             });
         } catch (Exception e) {
@@ -265,6 +297,10 @@ public class Map extends HumlaServiceFragment implements MapListener {
                     Log.d(TAG, "Failed to get position: " + t.getLocalizedMessage());
                 }
             });
+        } else if (device.getStatus().equals("online")) {
+            markers.get(device.getId()).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.arrow_green, null));
+        } else {
+            markers.get(device.getId()).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.arrow_red, null));
         }
     }
 
@@ -272,6 +308,7 @@ public class Map extends HumlaServiceFragment implements MapListener {
         if (markers.containsKey(position.getDeviceId())) {
             markers.get(position.getDeviceId()).setPosition(new GeoPoint(position.getLatitude(), position.getLongitude()));
             markers.get(position.getDeviceId()).setRotation(position.getCourse());
+            markers.get(position.getDeviceId()).setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.arrow_green, null));
             labels.get(position.getDeviceId()).setPosition(new GeoPoint(position.getLatitude(), position.getLongitude()));
         }
     }
