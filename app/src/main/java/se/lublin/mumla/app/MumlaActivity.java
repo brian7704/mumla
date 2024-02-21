@@ -608,7 +608,7 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
         }
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (mSettings.isTraccarEnabled() && locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+        if (mSettings.isTraccarEnabled() && (locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER) || locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))) {
             Intent intent = new Intent(this, LocationService.class);
             startService(intent);
         }

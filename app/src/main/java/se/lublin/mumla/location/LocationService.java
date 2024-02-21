@@ -17,12 +17,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.BatteryManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-
-import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -161,13 +158,11 @@ public class LocationService extends Service {
         public void onLocationChanged(@NonNull Location location)
         {
             try {
-                Log.d(TAG, "OSMAND");
                 traccarInterface.osmAnd(settings.getTraccarId(), System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
                         location.getSpeed(), location.getAltitude(), location.getBearing(), location.getAccuracy(), batteryCharging, batteryPercent).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.d(TAG, response.message());
-                        Log.d(TAG, "OSM RESPONSE " + response.message());
+
                     }
 
                     @Override
