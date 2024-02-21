@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -27,6 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import se.lublin.mumla.R;
@@ -82,6 +86,9 @@ public class LocationService extends Service {
     }
 
     public Notification showNotification(String content) {
+        if (notificationManager == null)
+            return null;
+
         // Bring MainActivity to the screen when the notification is pressed
         Intent intent = new Intent(getApplicationContext(), MumlaActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
@@ -106,12 +113,19 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         settings = Settings.getInstance(getApplicationContext());
-        retrofit = new Retrofit.Builder()
-                .baseUrl(settings.getTraccarUrl())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        traccarInterface = retrofit.create(TraccarInterface.class);
 
+        try {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(settings.getTraccarOsmandUrl())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            traccarInterface = retrofit.create(TraccarInterface.class);
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(LocationService.this, getString(R.string.invalid_osmand_url),
+                    Toast.LENGTH_LONG).show();
+            stopSelf();
+            return;
+        }
         _locListener = new MyLocationListener();
         _locManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
@@ -134,8 +148,12 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        _locManager.removeUpdates(_locListener);
-        unregisterReceiver(batteryReceiver);
+        try {
+            _locManager.removeUpdates(_locListener);
+            unregisterReceiver(batteryReceiver);
+        } catch (Exception e) {
+            Log.d(TAG, e.getLocalizedMessage());
+        }
         Log.d(TAG, "onDestroy");
     }
 
@@ -145,8 +163,18 @@ public class LocationService extends Service {
         {
             try {
                 traccarInterface.osmAnd(settings.getTraccarId(), System.currentTimeMillis(), location.getLatitude(), location.getLongitude(),
-                        location.getSpeed(), location.getAltitude(), location.getBearing(), location.getAccuracy(), batteryCharging, batteryPercent).execute();
-            } catch (IOException e) {
+                        location.getSpeed(), location.getAltitude(), location.getBearing(), location.getAccuracy(), batteryCharging, batteryPercent).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.d(TAG, response.message());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d(TAG, t.getLocalizedMessage());
+                    }
+                });
+            } catch (Exception e) {
                 Log.e(TAG, "Failed to send location to traccar: " + e.getLocalizedMessage());
             }
         }

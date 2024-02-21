@@ -173,8 +173,11 @@ public class Settings {
     public static final String PREF_START_UP_IN_PINNED_MODE = "startUpInPinnedMode";
     public static final boolean DEFAULT_START_UP_IN_PINNED_MODE = false;
 
+    public static final String PREF_TRACCAR_OSMAND_URL = "traccar_osmand_url";
+    public static final String DEFAULT_PREF_TRACCAR_OSMAND_URL = "http://192.168.1.10:5055";
+
     public static final String PREF_TRACCAR_URL = "traccar_url";
-    public static final String DEFAULT_PREF_TRACCAR_URL = "http://192.168.1.10:5055";
+    public static final String DEFAULT_PREF_TRACCAR_URL = "http://192.168.1.10:8082/";
 
     public static final String PREF_TRACCAR_USERNAME = "traccar_username";
     public static final String DEFAULT_PREF_TRACCAR_USERNAME = "admin";
@@ -500,5 +503,9 @@ public class Settings {
     public boolean isTraccarEnabled() {
         Log.d(TAG, "Traccar enabled: " + preferences.getBoolean(PREF_TRACCAR_ENABLED, DEFAULT_PREF_TRACCAR_ENABLED));
         return preferences.getBoolean(PREF_TRACCAR_ENABLED, DEFAULT_PREF_TRACCAR_ENABLED);
+    }
+
+    public String getTraccarOsmandUrl() {
+        return preferences.getString(PREF_TRACCAR_OSMAND_URL, DEFAULT_PREF_TRACCAR_OSMAND_URL);
     }
 }

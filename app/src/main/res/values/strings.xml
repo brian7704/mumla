@@ -28,6 +28,7 @@
     <string name="drawer_header_servers">Servers</string>
     <string name="drawer_favorites">Favorites</string>
     <string name="drawer_public">Public Servers</string>
+    <string name="drawer_map">Map</string>
 
     <!-- Chat formatting -->
     <string name="chat_message_to">%1$s → %2$s</string>
@@ -205,13 +206,17 @@
     <string name="donation_thanks">Thank you for the donation.</string>
     <string name="image_confirm_send">Send this image?</string>
     <string name="location">Location</string>
-    <string name="traccar_url">Traccar URL</string>
+    <string name="traccar_osmand_url">Traccar OsmAnd URL</string>
     <string name="traccar_username">Traccar Username</string>
     <string name="traccar_password">Traccar Password</string>
     <string name="traccar_id">Traccar ID</string>
     <string name="grant_perm_location">Location permission required for Traccar</string>
     <string name="sending_to_traccar">Sending location to Traccar</string>
     <string name="traccar">Traccar</string>
+    <string name="traccar_api_url">Traccar API URL</string>
+    <string name="traccar_url">Traccar URL</string>
+    <string name="invalid_osmand_url">Invalid OsmAnd URL</string>
+    <string name="invalid_traccar_url">Invalid Traccar URL</string>
 
     <plurals name="search_channel_users">
         <item quantity="one">%d user</item>

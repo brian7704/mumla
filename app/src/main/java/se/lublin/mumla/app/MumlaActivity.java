@@ -129,8 +129,8 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS = 2;
     private static final int PERMISSIONS_REQUEST_COARSE_LOCATION = 3;
-    private static final int PERMISSIONS_REQUEST_FINE_LOCATION = 4;
-    private static final int PERMISSIONS_REQUEST_BACKGROUND_LOCATION = 5;
+    public static final int PERMISSIONS_REQUEST_FINE_LOCATION = 4;
+    public static final int PERMISSIONS_REQUEST_BACKGROUND_LOCATION = 5;
     private Server mServerPendingPerm = null;
     private boolean mPermPostNotificationsAsked = false;
 
@@ -542,6 +542,9 @@ public class MumlaActivity extends AppCompatActivity implements ListView.OnItemC
                 Intent prefIntent = new Intent(this, Preferences.class);
                 startActivity(prefIntent);
                 return;
+            case DrawerAdapter.ITEM_MAP:
+                fragmentClass = Map.class;
+                break;
             default:
                 return;
         }
