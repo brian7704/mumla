@@ -34,7 +34,6 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -113,8 +112,8 @@ public class Map extends HumlaServiceFragment implements MapListener {
 
         followMe = getView().findViewById(R.id.follow_me);
         followMe.setOnClickListener(view1 -> {
-            myLocationNewOverlay.enableFollowLocation();
             mapView.zoomToBoundingBox(getBoundingBox(), true);
+            myLocationNewOverlay.enableFollowLocation();
         });
 
         myLocationNewOverlay = new MyLocationNewOverlay(mapView);
